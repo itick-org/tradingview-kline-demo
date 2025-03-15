@@ -1,6 +1,6 @@
 import UDFCompatibleDatafeed from './UDFCompatibleDatafeed.js'
 // 谨慎用试用的令牌，可能存在过期问题 
-const key = 'api_key'
+const key = 'a5ca43babf5e49c4b734bdcb6f51a4a4465d52bd3fbe48e1847ac9259ae290c8'
 new TradingView.widget({
   debug: false,
   fullscreen: false,

@@ -28,6 +28,9 @@ WhatsApp: +85259046663
 
 Email: support@itick.org
 
+## Demo 效果
+![Tradingview](itick-tradingview.png)
+
 ## 启动项目
 
 本项目仅供部分数据示例演示，如需更详细更准确的数据接入请联系iTick官方或参考文档: https://itick-cn.readme.io/reference/instructions
