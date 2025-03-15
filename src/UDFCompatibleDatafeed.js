@@ -1,12 +1,10 @@
 import Request from './request.js'
+import SingletonSocket from './SingletonSocket.js'
 export default class UDFCompatibleDatafeed {
   token = ''
   symbolInfo = {}
   configuration
   request
-  currentSymbol = ''
-  currentResolutions = ''
-  stopRequest = false
   lastBar
   constructor(token) {
     this.token = token
@@ -94,14 +92,18 @@ export default class UDFCompatibleDatafeed {
   // 获取K线数据
   async getBars (symbolInfo, resolution, periodParams, onResult, onError) {
     const { name, type, region } = symbolInfo
-    this.changeStopRequest(name, resolution)
-    if (this.stopRequest) {
-      onResult([], { noData: true })
-      return false
-    }
+    const { countBack, firstDataRequest, from, to } = periodParams
     try {
-      const data = await this.request.getKline(type, this.getSymbolRegion(type, region), name, this.getResolution(resolution))
-      this.lastBar = data.bars[data.bars.length - 1]
+      const params = {
+        symbolType: type,
+        region: this.getSymbolRegion(type, region),
+        symbol: name,
+        et: to * 1000,
+        limit: countBack,
+        resolution: this.getResolution(resolution)
+      }
+      const data = await this.request.getKline(params)
+      if (firstDataRequest) this.lastBar = data.bars[data.bars.length - 1]
       onResult(data.bars, data.meta)
     } catch (err) {
       onResult([], { noData: true })
@@ -112,18 +114,20 @@ export default class UDFCompatibleDatafeed {
     if (type === 'stock') return region || ''
     return 'gb'
   }
-  changeStopRequest (symbol, resolution) {
-    if (this.currentSymbol === symbol && this.currentResolutions === resolution) this.stopRequest = true
-    else this.stopRequest = false
-    this.currentSymbol = symbol
-    this.currentResolutions = resolution
-  }
   getResolution (resolutions) {
     const resolutionsMap = { '1': 1, '5': 2, '10': 3, '30': 4, '60': 5, '120': 6, '240': 7, '1D': 8, '1W': 9, '1M': 10 }
     return resolutionsMap[resolutions]
   }
   unsubscribeBars () { }
-  subscribeBars () { }
+
+  subscribeBars (symbolInfo, resolution, onRealtimeCallback, listenerGuid, onResetCacheNeededCallback) {
+    const { region, type, name } = symbolInfo
+    const socket = SingletonSocket.getInstance(this.token)
+    socket.connect(type, name, region, resolution, this.lastBar)
+    socket.onMessage(data => {
+      if (data) onRealtimeCallback(data)
+    })
+  }
   /**
    * 默认参数
    * @returns 
@@ -142,6 +146,7 @@ export default class UDFCompatibleDatafeed {
         { name: '港股', value: "stock_hk" },
         { name: 'SG股', value: "stock_sg" },
         { name: '美股', value: "stock_us" },
+        { name: '日股', value: "stock_jp" },
         { name: '外汇', value: "forex" },
         { name: '指数', value: "indices" }
       ],

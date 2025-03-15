@@ -20,21 +20,17 @@ export default class Request {
   constructor(token) {
     this.token = token
   }
-  getKline (symbolType, region, symbol, resolution) {
+  getKline (params) {
     return new Promise((resolve, reject) => {
-      fetch(`${BASE_URL}/${symbolType}/kline?region=${region}&code=${symbol}&kType=${resolution}`, { headers: { token: this.token } })
+      const { symbolType, region, symbol, resolution, et, limit } = params
+      fetch(`${BASE_URL}/${symbolType}/kline?region=${region}&code=${symbol}&kType=${resolution}&et=${et}&limit=${limit}`, { headers: { token: this.token } })
         .then(res => res.json())
         .then((res) => {
           const { code, data } = res
-          if (code === 0) {
-            const bars = [];
-            const meta = { noData: false }
-            for (const { t, c, o, h, l, v } of data) bars.push({ time: t, close: c, open: o, high: h, low: l, volume: v })
-            // 300条以下不显示的问题
-            if (bars.length) while (bars.length < 301) bars.unshift({ time: bars[0].time - this.resolutionsMap[resolution], close: bars[0].close, open: bars[0].close, high: bars[0].close, low: bars[0].close, volume: 0 })
-            resolve({ bars, meta })
-          }
-          else reject(res.msg)
+          const bars = []
+          const meta = { noData: code !== 0 }
+          for (const { t, c, o, h, l, v } of data) bars.push({ time: t, close: c, open: o, high: h, low: l, volume: v })
+          resolve({ bars, meta })
         })
         .catch(err => reject(err));
     });
