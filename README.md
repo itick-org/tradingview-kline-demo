@@ -33,7 +33,7 @@ Email: support@itick.org
 
 ## 启动项目
 
-本项目仅供部分数据示例演示，如需更详细更准确的数据接入请联系iTick官方或参考文档: https://itick-cn.readme.io/reference/instructions
+本项目仅供部分数据示例演示，如需更详细更准确的数据接入请联系iTick官方或参考文档: https://docs.itick.org/
 
 node 16+
 
