@@ -4,7 +4,7 @@ iTick 是一家数字代理机构，为金融科技公司和开发者提供可�
 
 官网: https://www.itick.org
 
-文档: https://itick-cn.readme.io/reference/instructions
+文档: https://docs.itick.org
 
 ## 特点
 
