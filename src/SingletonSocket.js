@@ -2,10 +2,10 @@
 
 
 const TYPE_MAP = {
-  'crypto': 'cws',
-  'stock': 'sws',
-  'forex': 'fws',
-  'indices': 'iws'
+  'crypto': 'crypto',
+  'stock': 'stock',
+  'forex': 'forex',
+  'indices': 'indices'
 }
 const BASE_URL = 'wss://api.itick.org'
 
